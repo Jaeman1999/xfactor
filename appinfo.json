@@ -1,0 +1,45 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "Jaeman1999",
+    "longName": "X-Factor",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/x.png",
+                "name": "x",
+                "type": "png"
+            },
+            {
+                "file": "fonts/AldotheApache.ttf",
+                "name": "FONT_APACHE_BOLD_14",
+                "type": "font"
+            },
+            {
+                "file": "fonts/AldotheApache.ttf",
+                "name": "FONT_APACHE_BOLD_20",
+                "type": "font"
+            },
+            {
+                "file": "fonts/AldotheApache.ttf",
+                "name": "FONT_APACHE_BOLD_48",
+                "type": "font"
+            },
+            {
+                "file": "fonts/AldotheApache.ttf",
+                "name": "FONT_APACHE_BOLD_82",
+                "type": "font"
+            }
+        ]
+    },
+    "shortName": "X-Factor",
+    "uuid": "2c02a519-c058-466d-bbef-b65bd0b3410a",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
