@@ -1,5 +1,5 @@
 #include <pebble.h>
-#include <pebble_fonts.h>
+	
 
 Window *my_window;
 TextLayer *hour_place, *minute_place, *day_full_place, *date_place;
@@ -8,6 +8,7 @@ GBitmap *x;
 BitmapLayer *x_layer;
 Layer *hour_layer, *minute_layer, *day_full_layer, *date_layer;
 const char *hour, *minute, *day_full0, *date;
+bool double_digits = false;
 
 void get_time() {
 	//Get the time
@@ -29,7 +30,10 @@ void get_time() {
 	//Erase the 0 in the hour if earlier than 10
 	if (placemat[0]=='0') {
 		memmove(placemat, &placemat[1], sizeof(placemat) - 1);
-	};
+		layer_destroy(hour_layer);
+		hour_layer = layer_create(GRect(25, -10, 144, 168));
+		layer_add_child(window_get_root_layer(my_window), hour_layer);
+	}
 	
 	//Create and set text layer with hour and minutes
 	hour_place = text_layer_create(GRect(0, 0, 0, 0));
@@ -126,32 +130,21 @@ void window_load(Window *my_window) {
 }
 
 void window_unload(Window *my_window) {
-	text_layer_destroy(hour_place);
-	text_layer_destroy(minute_place);
-	text_layer_destroy(date_place);
-	text_layer_destroy(day_full_place);
-	layer_remove_from_parent(hour_layer);
-	layer_remove_from_parent(minute_layer);
-	layer_remove_from_parent(date_layer);
-	layer_remove_from_parent(day_full_layer);
+	layer_destroy(text_layer_get_layer(hour_place));
+	layer_destroy(text_layer_get_layer(minute_place));
+	layer_destroy(text_layer_get_layer(date_place));
+	layer_destroy(text_layer_get_layer(day_full_place));
 	layer_destroy(hour_layer);
 	layer_destroy(minute_layer);
 	layer_destroy(date_layer);
 	layer_destroy(day_full_layer);
-	
 	fonts_unload_custom_font(hour_font);
 	fonts_unload_custom_font(minute_font);
 	fonts_unload_custom_font(small_font);
 	fonts_unload_custom_font(smaller_font);
 	tick_timer_service_unsubscribe();
-	
-	hour = NULL;
-	minute = NULL;
-	day_full0 = NULL;
-	date = NULL;
-	
-	gbitmap_destroy(x);
 	bitmap_layer_destroy(x_layer);
+	gbitmap_destroy(x);
 }
 
 void handle_init(void) {
@@ -164,6 +157,7 @@ void handle_init(void) {
 };
 
 void handle_deinit(void) {
+	window_stack_pop_all(true);
 	window_destroy(my_window);
 };
 

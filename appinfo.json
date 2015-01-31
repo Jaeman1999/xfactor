@@ -9,6 +9,12 @@
     "resources": {
         "media": [
             {
+                "file": "images/menu1.png",
+                "menuIcon": true,
+                "name": "menu",
+                "type": "png"
+            },
+            {
                 "file": "images/x.png",
                 "name": "x",
                 "type": "png"
