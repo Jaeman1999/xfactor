@@ -10,6 +10,34 @@ Layer *hour_layer, *minute_layer, *day_full_layer, *date_layer;
 const char *hour, *minute, *day_full0, *date;
 bool double_digits = false;
 
+void hour_update(Layer *this_layer, GContext *con) {
+	//Take the hour from the hour text layer
+	hour = text_layer_get_text(hour_place);
+	
+	//Draws the hour onto the screen.
+	graphics_draw_text(con, hour, hour_font, GRect(0, 0, 100, 85), GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+};
+
+void get_date() {
+	//Get the time
+	time_t temp = time(NULL);
+	struct tm *times_for_days = localtime(&temp);
+	
+	//Set the date arrays
+	static char day_full[] = "Monday";
+	static char date[] = "000. 00";
+	
+	//Fills in the arrays with the correct data
+	//strftime(day_full, sizeof("000000000"), "%A", times_for_days);
+	strftime(date, sizeof("000. 00"), "%b. %d", times_for_days);
+	
+	//Create and set the date text layers
+	day_full_place = text_layer_create(GRect(0, 0, 0, 0));
+	date_place = text_layer_create(GRect(0, 0, 0, 0));
+	text_layer_set_text(day_full_place, day_full);
+	text_layer_set_text(date_place, date);
+};
+
 void get_time() {
 	//Get the time
 	time_t temp = time(NULL);
@@ -18,14 +46,12 @@ void get_time() {
 	//Create the hour and minute arrays
 	static char placemat[] = "00";
 	static char placemat2[] = "00";
-	static char day_full[] = "000000000";
-	static char date[] = "000. 00";
+	static char checker[] = "00";
 	
 	//Place the hour/minutes/date into the arrays
 	strftime(placemat, sizeof("00"), "%I", times_for_days);
 	strftime(placemat2, sizeof("00"), "%M", times_for_days);
-	strftime(day_full, sizeof("000000000"), "%A", times_for_days);
-	strftime(date, sizeof("000. 00"), "%b. %d", times_for_days);
+	strftime(checker, sizeof("00"), "%H", times_for_days);
 	
 	//Erase the 0 in the hour if earlier than 10
 	if (placemat[0]=='0') {
@@ -33,26 +59,26 @@ void get_time() {
 		layer_destroy(hour_layer);
 		hour_layer = layer_create(GRect(25, -10, 144, 168));
 		layer_add_child(window_get_root_layer(my_window), hour_layer);
+		layer_set_update_proc(hour_layer, hour_update);
+		
+	} else {
+		layer_destroy(hour_layer);
+		hour_layer = layer_create(GRect(16, -10, 144, 168));
+		layer_add_child(window_get_root_layer(my_window), hour_layer);
+		layer_set_update_proc(hour_layer, hour_update);		
 	}
+	
+	if (checker[0]=='0' && checker[1]=='0') {
+		get_date();
+	}
+	
 	
 	//Create and set text layer with hour and minutes
 	hour_place = text_layer_create(GRect(0, 0, 0, 0));
-	minute_place = text_layer_create(GRect(0, 0, 0, 0));
-	day_full_place = text_layer_create(GRect(0, 0, 0, 0));
-	date_place = text_layer_create(GRect(0, 0, 0, 0));
 	text_layer_set_text(hour_place, placemat);
+	minute_place = text_layer_create(GRect(0, 0, 0, 0));
 	text_layer_set_text(minute_place, placemat2);
-	text_layer_set_text(day_full_place, day_full);
-	text_layer_set_text(date_place, date);
 }
-
-void hour_update(Layer *this_layer, GContext *con) {
-	//Take the hour from the hour text layer
-	hour = text_layer_get_text(hour_place);
-	
-	//Draws the hour onto the screen.
-	graphics_draw_text(con, hour, hour_font, GRect(0, 0, 100, 85), GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
-};
 
 void minute_update(Layer *this_layer, GContext *con) {
 	//Take the minute from the minute text layer
@@ -82,9 +108,13 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 	get_time();
 	layer_mark_dirty(minute_layer);
 	layer_mark_dirty(hour_layer);
+};
+
+void date_handler(struct tm *tick_time, TimeUnits units_changed) {
+	get_date();
 	layer_mark_dirty(day_full_layer);
 	layer_mark_dirty(date_layer);
-};
+}
 
 void window_load(Window *my_window) {
 	window_set_background_color(my_window, GColorBlack);
@@ -96,7 +126,7 @@ void window_load(Window *my_window) {
 	bitmap_layer_set_alignment(x_layer, GAlignBottom);
 	
 	//Sets the fonts to their variables
-	hour_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_APACHE_BOLD_82));
+	hour_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_APACHE_BOLD_78));
 	minute_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_APACHE_BOLD_48));
 	small_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_APACHE_BOLD_20));
 	smaller_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_APACHE_BOLD_14));
@@ -117,6 +147,7 @@ void window_load(Window *my_window) {
 	layer_add_child(window_get_root_layer(my_window), day_full_layer);
 	
 	get_time();
+	get_date();
 	
 	//Draws the time/date
 	layer_set_update_proc(hour_layer, hour_update);
@@ -126,6 +157,7 @@ void window_load(Window *my_window) {
 	
 	//Updates time every minute
 	get_time();
+	get_date();
 	tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 }
 
