@@ -1,14 +1,13 @@
 #include <pebble.h>
 	
 
-Window *my_window;
+Window *my_window, *win;
 TextLayer *hour_place, *minute_place, *day_full_place, *date_place;
 GFont *hour_font, *minute_font, *small_font, *smaller_font;
 GBitmap *x;
 BitmapLayer *x_layer;
 Layer *hour_layer, *minute_layer, *day_full_layer, *date_layer;
 const char *hour, *minute, *day_full0, *date;
-bool double_digits = false;
 
 void hour_update(Layer *this_layer, GContext *con) {
 	//Take the hour from the hour text layer
@@ -24,11 +23,11 @@ void get_date() {
 	struct tm *times_for_days = localtime(&temp);
 	
 	//Set the date arrays
-	static char day_full[] = "Monday";
+	static char day_full[] = "000000000";
 	static char date[] = "000. 00";
 	
 	//Fills in the arrays with the correct data
-	//strftime(day_full, sizeof("000000000"), "%A", times_for_days);
+	strftime(day_full, sizeof("000000000"), "%A", times_for_days);
 	strftime(date, sizeof("000. 00"), "%b. %d", times_for_days);
 	
 	//Create and set the date text layers
@@ -72,6 +71,8 @@ void get_time() {
 		get_date();
 	}
 	
+	//window_stack_push(win, false);
+	//window_stack_pop(false);
 	
 	//Create and set text layer with hour and minutes
 	hour_place = text_layer_create(GRect(0, 0, 0, 0));
@@ -110,12 +111,6 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 	layer_mark_dirty(hour_layer);
 };
 
-void date_handler(struct tm *tick_time, TimeUnits units_changed) {
-	get_date();
-	layer_mark_dirty(day_full_layer);
-	layer_mark_dirty(date_layer);
-}
-
 void window_load(Window *my_window) {
 	window_set_background_color(my_window, GColorBlack);
 	
@@ -128,7 +123,7 @@ void window_load(Window *my_window) {
 	//Sets the fonts to their variables
 	hour_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_APACHE_BOLD_78));
 	minute_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_APACHE_BOLD_48));
-	small_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_APACHE_BOLD_20));
+	small_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_APACHE_BOLD_16));
 	smaller_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_APACHE_BOLD_14));
 	
 	//Creates the layers for the time/date
@@ -189,7 +184,6 @@ void handle_init(void) {
 };
 
 void handle_deinit(void) {
-	window_stack_pop_all(true);
 	window_destroy(my_window);
 };
 

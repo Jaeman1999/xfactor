@@ -21,6 +21,11 @@
             },
             {
                 "file": "fonts/AldotheApache.ttf",
+                "name": "FONT_APACHE_BOLD_78",
+                "type": "font"
+            },
+            {
+                "file": "fonts/AldotheApache.ttf",
                 "name": "FONT_APACHE_BOLD_82",
                 "type": "font"
             },
@@ -38,13 +43,19 @@
                 "file": "fonts/AldotheApache.ttf",
                 "name": "FONT_APACHE_BOLD_14",
                 "type": "font"
+            },
+            {
+                "file": "fonts/AldotheApache.ttf",
+                "name": "FONT_APACHE_BOLD_16",
+                "type": "font"
             }
         ]
     },
+    "sdkVersion": "2",
     "shortName": "X-Factor",
     "uuid": "2c02a519-c058-466d-bbef-b65bd0b3410a",
     "versionCode": 1,
-    "versionLabel": "1.1",
+    "versionLabel": "1.2",
     "watchapp": {
         "watchface": true
     }
